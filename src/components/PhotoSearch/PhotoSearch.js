@@ -1,24 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useReducer } from "react";
 import Unsplash, { toJson } from "unsplash-js";
 import DisplayResults from "./DisplayResults/DisplayResults";
 
 import "./PhotoSearch.css";
 
+const httpReducer = (state, action) => {
+  switch(action.type) {
+    case 'SEND_REQUEST':
+      return { isLoading: true, isPagination: true }
+    case 'RESPONSE':
+      return { isLoading: false, isPagination: false }
+    default: 
+    throw new Error('Should not be reached')
+  }
+};
+
 const PhotoSearch = () => {
+
+  const [httpState, dispatchHttp] = useReducer(httpReducer, {
+    isLoading: false,
+    isPagination: true
+  });
+
+
   const [query, setQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isPagination, setIsPagination] = useState(true);
   const [results, setResults] = useState([]);
   const [page, setPage] = useState(1);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [isPagination, setIsPagination] = useState(true);
 
   const unsplash = new Unsplash({
-    accessKey: "YOUR_ACCESS_KEY",
+    accessKey: "riCuCNIUY8s3s1mRc9qynuOvi7pOHMxc6AkVhHyA-nM",
   });
 
   const submitHandler = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setIsPagination(true);
+    dispatchHttp({type: 'SEND_REQUEST'});
     console.log("clicked", query);
     unsplash.search
       .photos(query, 1, 30)
@@ -26,61 +43,53 @@ const PhotoSearch = () => {
       .then((response) => {
         console.log("response", response);
         setResults(response.results);
-        setIsPagination(false);
-        setIsLoading(false);
+        dispatchHttp({type: 'RESPONSE'});
       });
   };
 
   const squarish = () => {
-    setIsLoading(true);
-    setIsPagination(true);
+    dispatchHttp({type: 'SEND_REQUEST'});
     unsplash.search
       .photos(query, 1, 30, { orientation: "squarish" })
       .then(toJson)
       .then((response) => {
         console.log("response", response);
         setResults(response.results);
-        setIsPagination(false);
-        setIsLoading(false);
+        dispatchHttp({type: 'RESPONSE'});
       });
   };
 
   const portrait = () => {
-    setIsLoading(true);
-    setIsPagination(true);
+    dispatchHttp({type: 'SEND_REQUEST'});
     unsplash.search
       .photos(query, 1, 30, { orientation: "portrait" })
       .then(toJson)
       .then((response) => {
         console.log("response", response);
         setResults(response.results);
-        setIsPagination(false);
-        setIsLoading(false);
+        dispatchHttp({type: 'RESPONSE'});
       });
   };
 
   const previousPageHandler = () => {
-    setIsLoading(true);
-    if (page < 1) {
+    if (page <= 1) {
       setPage(1);
     } else {
       setPage(page - 1);
     }
-    setIsPagination(true);
+    dispatchHttp({type: 'SEND_REQUEST'});
     unsplash.search
       .photos(query, page, 30)
       .then(toJson)
       .then((response) => {
         console.log("response", response);
         setResults(response.results);
-        setIsLoading(false);
-        setIsPagination(false);
+        dispatchHttp({type: 'RESPONSE'});
       });
   };
 
   const nextPageHandler = () => {
-    setIsLoading(true);
-    setIsPagination(true);
+    dispatchHttp({type: 'SEND_REQUEST'});
     setPage(page + 1);
     unsplash.search
       .photos(query, page, 30)
@@ -88,8 +97,7 @@ const PhotoSearch = () => {
       .then((response) => {
         console.log("response", response);
         setResults(response.results);
-        setIsLoading(false);
-        setIsPagination(false);
+        dispatchHttp({type: 'RESPONSE'});
       });
   };
 
@@ -122,8 +130,8 @@ const PhotoSearch = () => {
         </button>
       </div>
 
-      <DisplayResults results={results} isLoading={isLoading} />
-      {isPagination ? null : (
+      <DisplayResults results={results} isLoading={httpState.isLoading} />
+      {httpState.isPagination ? null : (
         <div className="pagination">
           <button
             onClick={previousPageHandler}

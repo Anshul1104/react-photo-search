@@ -38,6 +38,10 @@ input {
     cursor: pointer;
 }
 
+.btn:disabled {
+    cursor: not-allowed;
+}
+
 .orientation-btns {
     margin-top: 16px;
 }
