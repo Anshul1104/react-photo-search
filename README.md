@@ -2,7 +2,7 @@
 Photo Search App made with React using Unsplash API. 
 
 ## Add your own Access Key
-Before running, generate your own Unsplash API access keys and add it to `src/PhotoSearch.js`
+Before running, generate your own Unsplash API access keys and add it to `src/components/PhotoSearch.js`
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
