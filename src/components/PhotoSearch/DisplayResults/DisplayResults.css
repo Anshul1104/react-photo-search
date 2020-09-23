@@ -1,0 +1,12 @@
+.card-list {
+    column-count: 3;
+    margin-top: 16px;
+}
+
+.card {
+    /* width: 400px; */
+}
+
+img {
+    max-width: 100%;
+}
